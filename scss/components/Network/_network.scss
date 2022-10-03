@@ -1,0 +1,75 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.btn-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 3rem;
+  max-width: 62%;
+
+  @include respond(from-tab-land) {
+    max-width: 40%;
+  }
+}
+
+.btn-container > * {
+  flex: 1 1 0;
+}
+
+.question {
+  font-size: 3rem;
+}
+
+.btn {
+  padding: 4em;
+  cursor: pointer;
+  font-weight: 700;
+  color: blanchedalmond;
+  @include transition;
+  transform: scale(1);
+  & span {
+    font-size: 3rem;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.btn-green {
+  background-color: $color-primary;
+  &:hover {
+    background-color: darken($color: $color-primary, $amount: 6);
+  }
+}
+
+.btn-red {
+  background-color: $color-warning;
+  &:hover {
+    background-color: darken($color: $color-warning, $amount: 6);
+  }
+}
+
+.reset-container{
+  justify-content: flex-end;
+  padding: 2rem;
+  position: absolute;
+}
+.reset {
+  align-content: flex-end;
+  padding: 2em;
+  font-weight: 500;
+  & span {
+    font-size: 2rem;
+    color: $color-white;
+  }
+}
+

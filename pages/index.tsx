@@ -1,77 +1,10 @@
 import { Button, Grid } from "@nextui-org/react";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
-
-//Type or architecture of the network
-type Axon = (
-  | {
-      question: string;
-      weight: number;
-      threshold: number;
-    }
-  | {
-      question: string;
-      weight: number;
-      threshold?: undefined;
-    }
-)[][];
-
-type NeuralNetwork = {
-  sector: string;
-  axon: Axon;
-}[];
-
-//The data of the network
-const neuralNetwork: NeuralNetwork = [
-  //sector 0  //neuralNetwork[sector].neuron[0][dendrite]
-  {
-    sector: "y",
-    axon: [
-      //1 ---->  neuron
-      [
-        // { threshold: 5, denied: 2 },
-        { question: "Can you walk?", weight: 1 }, //1 ---> dendrite
-        { question: "Can you kick things?", weight: 2 }, //2
-        { question: "Can you feel your legs?", weight: 5 }, //3
-      ],
-      //2 ---->  neuron
-      [
-        // { threshold: 5, denied: 2 },
-        { question: "Can you remember the first time you walk?", weight: 1 }, //1
-        { question: "Have you studyed another language?", weight: 2 }, //2
-      ],
-      [
-        // { threshold: 5, denied: 2 },
-        { question: "Is your stomach conftable right now?", weight: 1 }, //1
-        { question: "Do you have a headache?", weight: 2 }, //2
-        { question: "Can you breath correctly in this moment?", weight: 5 }, //3
-      ],
-    ],
-  },
-
-  //sector 1
-  {
-    sector: "x",
-    axon: [
-      [
-        // { threshold: 5, denied: 2 },
-        { question: "Are you a football player?", weight: 1, threshold: 12 }, //0
-        { question: "Do you have good memory?", weight: 2, threshold: 8 }, //1
-        { question: "Is your body system working correctly?", weight: 6 },
-      ],
-    ],
-  },
-
-  //sector 2
-  {
-    sector: "output",
-    axon: [
-      [
-        { question: "Are you alive?", weight: 5, threshold: 5 }, //0
-      ],
-    ],
-  },
-];
+import AnswerBtns from "../components/form/AnswerBtns";
+import FinalOutputDesition from "../components/form/FinalOutputDesition";
+import { neuralNetwork } from "../Database/SeedDatabase";
+import ReactCanvasConfetti from "react-canvas-confetti";
 
 const Home: NextPage = () => {
   //INITIALIZERS
@@ -105,7 +38,6 @@ const Home: NextPage = () => {
     setDendrite((dendrite) => dendrite + 1);
   };
 
-  
   //Function to reset the network
   const handleReset = () => {
     setSector(initialSector);
@@ -120,8 +52,8 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     // if (neuralNetwork[sector]?.axon?.[neuron]?.length === dendrite) {
-      if (neuronArr?.length === dendrite) {
-        setDendrite(initialDendrite);
+    if (neuronArr?.length === dendrite) {
+      setDendrite(initialDendrite);
       setNeuron((neuron) => neuron + 1);
     }
   }, [sector, neuron, dendrite]);
@@ -141,58 +73,23 @@ const Home: NextPage = () => {
         if (!dendrite.threshold) return dendrite;
         if (dendrite?.["threshold"] < axonWeight) return dendrite;
       }
-      );
-      //Set the new dendrites: []
+    );
+    //Set the new dendrites: []
     setNeuronArr(newAxon);
   }, [neuron]);
-  
+
   useEffect(() => {
     //Set the weight to the initial state
-    if(neuralNetwork.at(-1) === neuralNetwork?.[sector] ) return setAxonWeight(initialAxonWeight);
+    if (neuralNetwork.at(-1) === neuralNetwork?.[sector])
+      return setAxonWeight(initialAxonWeight);
   }, [sector]);
-
-
-  //threshold
-
-  const showOutput = () => {
-    return (
-      <div>
-        <h2>{ axonWeight > 4 ? `Keep trying until your dreams comes true. You are a good person.` : 'You are doing well, keep trying.'}</h2>
-      </div>
-    );
-  };
-
-  //BUTTONS
-
-  const showAnswers = () => {
-    return (
-      <Grid.Container className="btn-container">
-        <Button
-          shadow
-          color="success"
-          className="btn btn-green"
-          onPress={() => handleAssignWeight(1)}
-        >
-          Yes
-        </Button>
-        <Button
-          shadow
-          color="error"
-          className="btn btn-red"
-          onPress={() => handleAssignWeight(0)}
-        >
-          No
-        </Button>
-      </Grid.Container>
-    );
-  };
 
   return (
     //HTML
 
     <>
       <Grid.Container className="reset-container">
-        <Button className="btn reset" onPress={handleReset}>
+        <Button auto className="btn reset" onPress={handleReset}>
           Reset
         </Button>
       </Grid.Container>
@@ -202,10 +99,11 @@ const Home: NextPage = () => {
           {neuronArr?.length > 0 && neuronArr !== null && (
             <Grid className="question">{neuronArr?.[dendrite]?.question}</Grid>
           )}
-          {neuralNetwork[sector] &&
-          neuronArr?.length  > dendrite
-            ? showAnswers()
-            : showOutput()}
+          {neuralNetwork[sector] && neuronArr?.length > dendrite ? (
+            <AnswerBtns handleAssignWeight={handleAssignWeight} />
+          ) : (
+            <FinalOutputDesition axonWeight={axonWeight} />
+          )}
         </>
       </Grid.Container>
     </>

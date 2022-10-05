@@ -57,7 +57,7 @@ const neuralNetwork: NeuralNetwork = [
         // { threshold: 5, denied: 2 },
         { question: "Are you a football player?", weight: 1, threshold: 12 }, //0
         { question: "Do you have good memory?", weight: 2, threshold: 8 }, //1
-        { question: "Is your body system working correctly?", weight: 5 },
+        { question: "Is your body system working correctly?", weight: 6 },
       ],
     ],
   },
@@ -74,7 +74,6 @@ const neuralNetwork: NeuralNetwork = [
 ];
 
 const Home: NextPage = () => {
-
   //INITIALIZERS
 
   const initialDendrite = 0;
@@ -89,12 +88,12 @@ const Home: NextPage = () => {
   const [dendrite, setDendrite] = useState<number>(initialDendrite);
   //Intitialize weight
   const [axonWeight, setAxonWeight] = useState<number>(initialAxonWeight);
- 
 
   //Funciton to assign weight and get the soma
   const handleAssignWeight = (weight: number) => {
     //Guard clauses
     if (!neuralNetwork[sector].axon[neuron][dendrite]) return;
+    // if (dendrite === neuronArr.length  ) return;
     //assign weight
     setAxonWeight(
       weight === 0
@@ -102,10 +101,11 @@ const Home: NextPage = () => {
         : neuralNetwork?.[sector]?.axon?.[neuron]?.[dendrite]?.weight! +
             axonWeight
     );
-    
+
     setDendrite((dendrite) => dendrite + 1);
   };
 
+  
   //Function to reset the network
   const handleReset = () => {
     setSector(initialSector);
@@ -119,14 +119,14 @@ const Home: NextPage = () => {
   //LISTENERS which are pending if a certain dependenci change
 
   useEffect(() => {
-    if (neuralNetwork[sector]?.axon?.[neuron]?.length === dendrite) {
-      setDendrite(initialDendrite);
+    // if (neuralNetwork[sector]?.axon?.[neuron]?.length === dendrite) {
+      if (neuronArr?.length === dendrite) {
+        setDendrite(initialDendrite);
       setNeuron((neuron) => neuron + 1);
     }
   }, [sector, neuron, dendrite]);
 
   useEffect(() => {
-    console.log({ sector, neuron, dendrite });
     if (neuralNetwork?.[sector]?.axon?.length === neuron) {
       setNeuron(initialNeuron);
       setSector((sector) => sector + 1);
@@ -141,24 +141,23 @@ const Home: NextPage = () => {
         if (!dendrite.threshold) return dendrite;
         if (dendrite?.["threshold"] < axonWeight) return dendrite;
       }
-    );
-    //Set the new dendrites: []
-    console.log(newAxon);
+      );
+      //Set the new dendrites: []
     setNeuronArr(newAxon);
   }, [neuron]);
-
+  
   useEffect(() => {
     //Set the weight to the initial state
-    setAxonWeight(initialAxonWeight);
+    if(neuralNetwork.at(-1) === neuralNetwork?.[sector] ) return setAxonWeight(initialAxonWeight);
   }, [sector]);
 
 
   //threshold
-  
+
   const showOutput = () => {
     return (
       <div>
-        <h2>Keep trying until your dreams comes true. You are a good person</h2>
+        <h2>{ axonWeight > 4 ? `Keep trying until your dreams comes true. You are a good person.` : 'You are doing well, keep trying.'}</h2>
       </div>
     );
   };
@@ -189,7 +188,7 @@ const Home: NextPage = () => {
   };
 
   return (
-    //HTML 
+    //HTML
 
     <>
       <Grid.Container className="reset-container">
@@ -204,13 +203,13 @@ const Home: NextPage = () => {
             <Grid className="question">{neuronArr?.[dendrite]?.question}</Grid>
           )}
           {neuralNetwork[sector] &&
-          neuralNetwork[sector]?.axon[neuron]?.length > dendrite
+          neuronArr?.length  > dendrite
             ? showAnswers()
             : showOutput()}
         </>
       </Grid.Container>
     </>
   );
-};
+};;
 
 export default Home;
